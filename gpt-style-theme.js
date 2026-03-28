@@ -21,9 +21,9 @@
             dark: {
                 background: '#000000', // OLED Black
                 text: '#ececec',
-                border: '#222',
+                border: '#000000',
                 input: { background: '#303030', text: '#ececec', placeholder: 'rgba(255,255,255,0.4)' }, // App Grey
-                uiGrey: '#a1a1a1', // For Monochrome buttons
+                uiGrey: '#1a1a1a', // For Monochrome buttons
                 sidebar: { text: '#ececec', heading: 'rgb(143, 143, 143)', hover: '#2f2f2f', searchBg: '#1a1a1a' }
             }
         },
@@ -77,13 +77,30 @@
       html.dark [data-element-id="nav-bar"],
       html.dark header { background-color: ${d.background} !important; background-image: none !important; }
 
-      /* --- AI RESPONSE: LEFT-FLUSH --- */
+      /* --- AI RESPONSE: LEFT-FLUSH --- */      /* --- AI RESPONSE: FULL WIDTH & LEFT-FLUSH --- */
       ${SELECTORS.AI_AVATAR} { display: none !important; }
-      ${SELECTORS.AI_RESPONSE_BLOCK} { 
-        display: flex !important; flex-direction: column !important; align-items: flex-start !important; 
-        padding-left: 1rem !important; padding-right: 2rem !important; width: 100% !important; 
+      
+      /* Target the message row to remove grid gaps */
+      [data-element-id="response-block"] { 
+        display: block !important; 
+        width: 100% !important; 
       }
-      ${SELECTORS.AI_RESPONSE_BLOCK} > div { width: 100% !important; text-align: left !important; display: block !important; }
+
+      ${SELECTORS.AI_RESPONSE_BLOCK} { 
+        display: block !important;
+        padding-left: 1rem !important; 
+        padding-right: 1rem !important; 
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        max-width: 100% !important; /* This kills the blank space on the right */
+        width: 100% !important;
+      }
+      
+      /* Ensure the prose actually fills the container */
+      ${SELECTORS.AI_RESPONSE_BLOCK} > div { 
+        max-width: 100% !important; 
+        width: 100% !important;
+      }
 
       /* --- USER MESSAGE BUBBLES --- */
       html.dark ${SELECTORS.USER_MESSAGE_BLOCK} { 
@@ -100,7 +117,7 @@
         background-color: ${d.input.background} !important; 
         border-radius: ${CONFIG.borderRadius.large} !important;
       }
-      #chat-input-textbox::placeholder { font-size: 13px !important; color: ${d.input.placeholder} !important; }
+      #chat-input-textbox::placeholder { font-size: 14px !important; color: ${d.input.placeholder} !important; }
 
       /* --- MONOCHROME UI --- */
       button[aria-label="Regenerate response"], 
