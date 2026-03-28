@@ -1,5 +1,6 @@
 /**
- * A ChatGPT-Inspired Theme for TypingMind - Cleaned Version
+ * A ChatGPT-Inspired Theme for TypingMind
+ * Final Version: 1rem Padding + Gradient Fix
  */
 (function () {
     'use strict';
@@ -31,17 +32,12 @@
         borderRadius: { large: '1.5rem' },
     };
 
-    const SELECTORS = {
-        USER_MESSAGE_BLOCK: 'div[data-element-id="user-message"]',
-        SIDEBAR: { BACKGROUND: '[data-element-id="side-bar-background"]', SEARCH: '[data-element-id="search-chats-bar"]' }
-    };
-
     const mainStyle = document.createElement('style');
     const light = CONFIG.colors.light;
     const dark = CONFIG.colors.dark;
     
     mainStyle.textContent = `
-      /* Clear the annoying gradient smudge */
+      /* Kill the dark gradient smudge in the input corner */
       .scroll-indicator-gradient, 
       [class*="scroll-indicator-gradient"],
       div[class*="bottom-0"][class*="right-0"][class*="bg-gradient-to-l"] { 
@@ -50,27 +46,37 @@
         opacity: 0 !important;
       }
 
-      /* Chat Bubble Styling */
+      /* User Message Bubble - Set to 1rem Padding */
       html:not(.dark) [data-element-id="chat-space-middle-part"] [data-element-id="user-message"] { 
         background-color: ${light.input.background} !important; 
-        padding: 1.25rem 1.5rem !important; 
+        padding: 1rem !important; 
         border-radius: ${CONFIG.borderRadius.large} !important;
         margin-left: auto !important;
+        max-width: 90% !important;
       }
       html.dark [data-element-id="chat-space-middle-part"] [data-element-id="user-message"] { 
         background-color: ${dark.input.background} !important; 
-        padding: 1.25rem 1.5rem !important; 
+        padding: 1rem !important; 
         border-radius: ${CONFIG.borderRadius.large} !important;
         margin-left: auto !important;
+        max-width: 90% !important;
       }
 
-      /* Input Bar Fixes */
-      html:not(.dark) [data-element-id="chat-space-end-part"] [role="presentation"] { background-color: ${light.input.background} !important; border-radius: ${CONFIG.borderRadius.large} !important; }
-      html.dark [data-element-id="chat-space-end-part"] [role="presentation"] { background-color: ${dark.input.background} !important; border-radius: ${CONFIG.borderRadius.large} !important; }
+      /* Input Bar Area - 1rem spacing and matching background */
+      html:not(.dark) [data-element-id="chat-space-end-part"] [role="presentation"] { 
+        background-color: ${light.input.background} !important; 
+        border-radius: ${CONFIG.borderRadius.large} !important;
+        padding: 0.5rem !important;
+      }
+      html.dark [data-element-id="chat-space-end-part"] [role="presentation"] { 
+        background-color: ${dark.input.background} !important; 
+        border-radius: ${CONFIG.borderRadius.large} !important;
+        padding: 0.5rem !important;
+      }
       
       #chat-input-textbox { border: none !important; outline: none !important; background: transparent !important; }
     `;
     document.head.appendChild(mainStyle);
 
-    console.log('TypingMind Theme: Smudge removed.');
+    console.log('TypingMind Theme: 1rem Padding & Smudge-free.');
 })();
