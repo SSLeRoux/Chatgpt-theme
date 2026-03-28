@@ -1,25 +1,22 @@
 /**
- * A ChatGPT-App-Inspired Theme for TypingMind
- * FINAL FULL VERSION: Pure Black, #303030 Bubbles, Hidden AI Icons, Full Sidebar & Fonts
+ * A ChatGPT-OLED-App Theme for TypingMind
+ * THE COMPLETE MASTER VERSION: 
+ * Pure Black (#000), Flush AI Text, Monochrome UI, Full Sidebar & Markdown Logic
  */
 (function () {
     'use strict';
 
     const CONFIG = {
         colors: {
-            light: {
-                background: '#F9F9F9',
-                text: '#000',
-                border: '#ccc',
-                input: { background: '#f4f4f4', text: 'rgb(13, 13, 13)' },
-                sidebar: { text: 'rgb(13, 13, 13)', hover: '#E3E3E3', searchBg: '#fff' }
-            },
             dark: {
-                background: '#000000', // Pure Black App Background
+                background: '#000000',
+                bubble: '#303030',
                 text: '#ececec',
-                border: '#333',
-                input: { background: '#303030', text: '#ececec' }, // App-style bubble grey
-                sidebar: { text: '#ececec', heading: 'rgb(143, 143, 143)', hover: '#2f2f2f', searchBg: '#1a1a1a' }
+                border: '#222',
+                sidebarHover: '#2f2f2f',
+                uiGrey: '#a1a1a1',
+                placeholder: 'rgba(255,255,255,0.4)',
+                searchBg: '#1a1a1a'
             }
         },
         fonts: { 
@@ -31,7 +28,8 @@
 
     const SELECTORS = {
         USER_MESSAGE_BLOCK: 'div[data-element-id="user-message"]',
-        AI_AVATAR: '[data-element-id="chat-avatar-container"]', // The purple icon
+        AI_RESPONSE: '[data-element-id="ai-response"]',
+        AI_AVATAR: '[data-element-id="chat-avatar-container"]',
         SIDEBAR: { 
             WORKSPACE: '[data-element-id="workspace-bar"]', 
             BACKGROUND: '[data-element-id="side-bar-background"]',
@@ -41,39 +39,63 @@
     };
 
     /**
-     * 1) Combined Sidebar & Main Styles
+     * 1) THE CSS OVERHAUL
      */
     const style = document.createElement('style');
     const d = CONFIG.colors.dark;
     
     style.textContent = `
-      /* --- HIDE AI AVATAR ICON --- */
-      ${SELECTORS.AI_AVATAR} { display: none !important; }
-
-      /* --- GLOBAL APP DARK MODE --- */
+      /* --- GLOBAL OLED BLACKOUT --- */
       html.dark body, 
       html.dark [data-element-id="chat-space-middle-part"],
       html.dark ${SELECTORS.SIDEBAR.BACKGROUND},
-      html.dark ${SELECTORS.SIDEBAR.WORKSPACE} { 
+      html.dark ${SELECTORS.SIDEBAR.WORKSPACE},
+      html.dark [data-element-id="chat-space-beginning-part"],
+      html.dark [data-element-id="chat-space-end-part"],
+      html.dark [data-element-id="nav-bar"],
+      html.dark header { 
         background-color: ${d.background} !important; 
+        background-image: none !important;
       }
 
-      /* Sidebar Specifics */
-      html.dark ${SELECTORS.SIDEBAR.SEARCH} { background-color: ${d.sidebar.searchBg} !important; border: 1px solid ${d.border} !important; }
-      html.dark ${SELECTORS.SIDEBAR.NEW_CHAT} { background-color: ${d.sidebar.hover} !important; color: ${d.text} !important; }
+      /* --- FLUSH AI RESPONSES --- */
+      ${SELECTORS.AI_AVATAR} { display: none !important; }
+      ${SELECTORS.AI_RESPONSE} { padding-left: 0 !important; margin-left: 0 !important; }
+      ${SELECTORS.AI_RESPONSE} > div { grid-template-columns: 1fr !important; display: block !important; }
+
+      /* --- MONOCHROME UI (No more Purple/Blue) --- */
+      button[aria-label="Regenerate response"], 
+      button[class*="text-blue-"], 
+      [class*="bg-blue-600"] { 
+        background-color: ${d.uiGrey} !important; 
+        color: #000 !important; 
+        border: none !important;
+      }
+      html.dark svg[class*="text-blue-"] { color: ${d.uiGrey} !important; }
+
+      /* --- SIDEBAR FULL STYLING --- */
+      html.dark ${SELECTORS.SIDEBAR.SEARCH} { 
+        background-color: ${d.searchBg} !important; 
+        border: 1px solid ${d.border} !important; 
+        color: ${d.text} !important; 
+      }
+      html.dark ${SELECTORS.SIDEBAR.NEW_CHAT} { 
+        background-color: ${d.sidebarHover} !important; 
+        color: ${d.text} !important; 
+      }
       html.dark [data-element-id="custom-chat-item"] span, 
       html.dark [data-element-id="selected-chat-item"] span { 
-        color: ${d.sidebar.text} !important; 
+        color: ${d.text} !important; 
         font-family: ${CONFIG.fonts.sidebar} !important; 
       }
       html.dark [data-element-id="custom-chat-item"]:hover, 
       html.dark [data-element-id="selected-chat-item"] { 
-        background-color: ${d.sidebar.hover} !important; 
+        background-color: ${d.sidebarHover} !important; 
       }
 
-      /* User Message Bubbles (1rem Padding) */
+      /* --- USER MESSAGES & INPUT (The Bubble Look) --- */
       html.dark ${SELECTORS.USER_MESSAGE_BLOCK} { 
-        background-color: ${d.input.background} !important; 
+        background-color: ${d.bubble} !important; 
         color: ${d.text} !important;
         padding: 1rem !important;
         border-radius: ${CONFIG.borderRadius.large} !important;
@@ -83,36 +105,42 @@
         font-size: 18px !important;
         line-height: 28px !important;
       }
-
-      /* Input Bar Area */
       html.dark [data-element-id="chat-space-end-part"] [role="presentation"] { 
-        background-color: ${d.input.background} !important; 
+        background-color: ${d.bubble} !important; 
         border-radius: ${CONFIG.borderRadius.large} !important;
       }
-      #chat-input-textbox { border: none !important; outline: none !important; background: transparent !important; color: ${d.text} !important; }
+      #chat-input-textbox::placeholder { font-size: 13px !important; opacity: 0.6 !important; }
 
-      /* Prose & Text Rendering */
+      /* --- PROSE REFINEMENT --- */
       .prose { 
         max-width: 100% !important; 
         font-family: ${CONFIG.fonts.primary} !important; 
         font-size: 18px !important;
         line-height: 28px !important;
+        color: ${d.text} !important;
       }
+      pre code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace !important; }
     `;
     document.head.appendChild(style);
 
     /**
-     * 2) Logic for User Message Processing (Markdown/Bold/Italic)
+     * 2) DYNAMIC CONTENT LOGIC (Markdown & Observers)
      */
-    function styleUserMessageEl(msgEl) {
+    const Utils = {
+        escapeHtml(str) { return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    };
+
+    function processUserMessage(msgEl) {
         if (msgEl.hasAttribute('data-processed')) return;
-        // This keeps the internal formatting of your messages working
+        // Logic to preserve 1rem padding even when content updates
+        msgEl.style.padding = "1rem";
         msgEl.setAttribute('data-processed', 'true');
     }
 
-    const observer = new MutationObserver(() => {
-        document.querySelectorAll(SELECTORS.USER_MESSAGE_BLOCK).forEach(msg => styleUserMessageEl(msg));
+    const observer = new MutationObserver((mutations) => {
+        document.querySelectorAll(SELECTORS.USER_MESSAGE_BLOCK).forEach(msg => processUserMessage(msg));
     });
+    
     observer.observe(document.body, { childList: true, subtree: true });
 
 })();
