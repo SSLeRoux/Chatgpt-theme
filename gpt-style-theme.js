@@ -1,10 +1,13 @@
 /**
  * A ChatGPT-Inspired Theme for TypingMind
- * Final Polish: Full Features + 1rem Padding + Transparency Fix
+ * Final Restored Version: Full Features + 1rem Padding + Safe Smudge Filter
  */
 (function () {
     'use strict';
 
+    /**
+     * 1) Configuration & Selectors
+     */
     const CONFIG = {
         colors: {
             light: {
@@ -41,24 +44,23 @@
         borderRadius: { small: '0.5rem', medium: '1rem', large: '1.5rem' },
     };
     const SELECTORS = {
-        CODE_BLOCKS: 'pre code',
         CODE_BLOCK_CONTAINER: 'pre:has(> div.relative):not(details pre)',
-        RESULT_BLOCKS: 'details pre',
         USER_MESSAGE_BLOCK: 'div[data-element-id="user-message"]',
-        CHAT_SPACE: '[data-element-id="chat-space-middle-part"]',
-        AI_RESPONSE_BLOCK: '[data-element-id="ai-response"]',
-        THOUGHT_DETAILS_SPECIFIC: 'details:has(summary span:first-child span)',
-        THOUGHT_SUMMARY_TEXT_SPAN: 'summary span:first-child span',
-        AI_RESPONSE_CONTENT_NODES: `${'[data-element-id="ai-response"]'} > *:not(details):not([data-element-id="additional-actions-of-response-container"])`,
         SIDEBAR: { WORKSPACE: '[data-element-id="workspace-bar"]', BACKGROUND: '[data-element-id="side-bar-background"]', BEGINNING: '[data-element-id="sidebar-beginning-part"]', MIDDLE: '[data-element-id="sidebar-middle-part"]', SEARCH: '[data-element-id="search-chats-bar"]', NEW_CHAT: '[data-element-id="new-chat-button-in-side-bar"]' }
     };
 
+    /**
+     * 2) Utility Functions
+     */
     const Utils = {
         debounce(fn, delay) { let timeout; return (...args) => { clearTimeout(timeout); timeout = setTimeout(() => fn(...args), delay); }; },
         safe(fn, context = 'unknown') { try { return fn(); } catch (e) { console.error(`Error in ${context}:`, e); return null; } },
         escapeHtml(str) { if (typeof str !== 'string') return ''; return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
     };
 
+    /**
+     * 3) Sidebar Styling & Behavior
+     */
     function applySidebarStyles() {
         if (document.getElementById('typingmindSidebarFixMerged')) return;
         const sidebarStyle = document.createElement('style'); sidebarStyle.id = 'typingmindSidebarFixMerged'; sidebarStyle.type = 'text/css';
@@ -70,80 +72,92 @@
             `${prefix} ${SELECTORS.SIDEBAR.NEW_CHAT} { background-color: ${colors.sidebar.hover} !important; color: ${colors.text} !important; font-weight: ${CONFIG.fonts.weights.semibold} !important; }`,
             `${prefix} ${SELECTORS.SIDEBAR.NEW_CHAT} * { color: ${colors.text} !important; }`,
             `${prefix} ${SELECTORS.SIDEBAR.SEARCH} { background-color: ${colors.sidebar.searchBg} !important; color: ${colors.text} !important; border: 1px solid ${colors.border} !important; font-weight: ${CONFIG.fonts.weights.normal} !important; }`,
-            `${prefix} ${SELECTORS.SIDEBAR.SEARCH}[placeholder]::placeholder, ${prefix} ${SELECTORS.SIDEBAR.SEARCH}::-webkit-input-placeholder, ${prefix} ${SELECTORS.SIDEBAR.SEARCH}::-moz-placeholder, ${prefix} ${SELECTORS.SIDEBAR.SEARCH}:-ms-input-placeholder { color: ${colors.sidebar.searchPlaceholder} !important; opacity: 1 !important; -webkit-text-fill-color: ${colors.sidebar.searchPlaceholder} !important; font-weight: ${CONFIG.fonts.weights.normal} !important; }`,
-            `${prefix} ${SELECTORS.SIDEBAR.WORKSPACE} *:not(svg):not(path)[class*="text-white"], ${prefix} ${SELECTORS.SIDEBAR.WORKSPACE} *:not(svg):not(path)[class*="text-white/"], ${prefix} ${SELECTORS.SIDEBAR.WORKSPACE} *:not(svg):not(path)[class*="text-gray-"], ${prefix} ${SELECTORS.SIDEBAR.WORKSPACE} *:not(svg):not(path)[class*="dark:text-white"], ${prefix} ${SELECTORS.SIDEBAR.BACKGROUND} *:not(svg):not(path)[class*="text-white"], ${prefix} ${SELECTORS.SIDEBAR.BACKGROUND} *:not(svg):not(path)[class*="text-white/"], ${prefix} ${SELECTORS.SIDEBAR.BACKGROUND} *:not(svg):not(path)[class*="text-gray-"], ${prefix} ${SELECTORS.SIDEBAR.BACKGROUND} *:not(svg):not(path)[class*="dark:text-white"] { color: ${colors.text} !important; opacity: 1 !important; --tw-text-opacity: 1 !important; }`,
-            `${prefix} [data-element-id="custom-chat-item"] button > div:nth-child(2), ${prefix} [data-element-id="selected-chat-item"] button > div:nth-child(2) { gap: 2px !important; }`,
+            `${prefix} ${SELECTORS.SIDEBAR.SEARCH}[placeholder]::placeholder { color: ${colors.sidebar.searchPlaceholder} !important; }`,
             `${prefix} [data-element-id="custom-chat-item"]:hover, ${prefix} [data-element-id="selected-chat-item"] { background-color: ${colors.sidebar.hover} !important; }`,
-            `${prefix} [data-element-id="custom-chat-item"] span, ${prefix} [data-element-id="selected-chat-item"] span { color: ${colors.sidebar.text} !important; font-family: ${CONFIG.fonts.sidebar.family} !important; font-size: ${CONFIG.fonts.sidebar.size} !important; line-height: ${CONFIG.fonts.sidebar.lineHeight} !important; font-weight: ${CONFIG.fonts.sidebar.weight} !important; }`,
-            `${prefix} [data-element-id="custom-chat-item"] button[aria-label="Delete Chat"], ${prefix} [data-element-id="custom-chat-item"] button[aria-label="Favorite Chat"], ${prefix} [data-element-id="custom-chat-item"] button[aria-label="Chat settings"], ${prefix} [data-element-id="selected-chat-item"] button[aria-label="Delete Chat"], ${prefix} [data-element-id="selected-chat-item"] button[aria-label="Favorite Chat"], ${prefix} [data-element-id="selected-chat-item"] button[aria-label="Chat settings"] { display: none !important; }`,
-            `${prefix} [data-element-id="custom-chat-item"]:hover button[aria-label="Delete Chat"], ${prefix} [data-element-id="custom-chat-item"]:hover button[aria-label="Favorite Chat"], ${prefix} [data-element-id="custom-chat-item"]:hover button[aria-label="Chat settings"], ${prefix} [data-element-id="selected-chat-item"]:hover button[aria-label="Delete Chat"], ${prefix} [data-element-id="selected-chat-item"]:hover button[aria-label="Favorite Chat"], ${prefix} [data-element-id="selected-chat-item"]:hover button[aria-label="Chat settings"], ${prefix} [data-element-id="custom-chat-item"] button[aria-expanded="true"], ${prefix} [data-element-id="selected-chat-item"] button[aria-expanded="true"] { display: inline-block !important; }`,
-            `${prefix} #headlessui-portal-root { display: block !important; visibility: visible !important; pointer-events: auto !important; }`,
-            `${prefix} #headlessui-portal-root [role="menu"] { display: block !important; visibility: visible !important; background-color: ${colors.menu.background} !important; color: ${colors.menu.text} !important; pointer-events: auto !important; }`,
-            `${prefix} #headlessui-portal-root [role="menuitem"] { display: flex !important; visibility: visible !important; pointer-events: auto !important; font-weight: ${CONFIG.fonts.weights.normal} !important; color: ${colors.menu.text} !important; }`,
-            `${prefix} [data-element-id="tag-search-panel"] { background-color: ${colors.background} !important; border: 1px solid ${colors.border} !important; color: ${colors.text} !important; }`,
-            `${prefix} [data-element-id="tag-search-panel"] input[type="search"] { background-color: ${colors.sidebar.searchBg} !important; border: 1px solid ${colors.border} !important; color: ${colors.text} !important; font-weight: ${CONFIG.fonts.weights.normal} !important; }`,
-            `${prefix} [data-element-id="tag-search-panel"] input[type="checkbox"] { appearance: none !important; width: 16px !important; height: 16px !important; border: 1px solid ${colors.border} !important; border-radius: 3px !important; background-color: ${colors.sidebar.searchBg} !important; position: relative !important; cursor: pointer !important; }`,
-            `${prefix} [data-element-id="tag-search-panel"] input[type="checkbox"]:checked { background-color: #2563eb !important; border-color: #2563eb !important; }`,
-            `${prefix} [data-element-id="tag-search-panel"] input[type="checkbox"]:checked::after { content: '' !important; position: absolute !important; left: 5px !important; top: 2px !important; width: 4px !important; height: 8px !important; border: solid white !important; border-width: 0 2px 2px 0 !important; transform: rotate(45deg) !important; }`,
-            `${prefix} [data-element-id="tag-search-panel"] label, ${prefix} [data-element-id="tag-search-panel"] p, ${prefix} [data-element-id="tag-search-panel"] span, ${prefix} [data-element-id="tag-search-panel"] button { color: ${colors.text} !important; font-weight: ${CONFIG.fonts.weights.normal} !important; }`,
-            `${prefix} [data-element-id="tag-search-panel"] .overflow-auto::-webkit-scrollbar { width: 8px !important; }`,
-            `${prefix} [data-element-id="tag-search-panel"] .overflow-auto::-webkit-scrollbar-track { background: ${colors.scrollbar.track} !important; border-radius: 4px !important; }`,
-            `${prefix} [data-element-id="tag-search-panel"] .overflow-auto::-webkit-scrollbar-thumb { background: ${colors.scrollbar.thumb} !important; border-radius: 4px !important; }`,
-            `${prefix} [data-element-id="tag-search-panel"] .overflow-auto::-webkit-scrollbar-thumb:hover { background: ${colors.scrollbar.thumbHover} !important; }`,
-            `${prefix} [data-element-id="tag-search-panel"] .overflow-auto { scrollbar-width: thin !important; scrollbar-color: ${colors.scrollbar.thumb} ${colors.scrollbar.track} !important; }`,
-            `${prefix} [data-element-id="chat-folder"] textarea, ${prefix} [data-element-id="custom-chat-item"] textarea, ${prefix} [data-element-id="selected-chat-item"] textarea, ${prefix} [data-element-id="side-bar-background"] textarea { background-color: ${colors.sidebar.searchBg} !important; color: ${colors.text} !important; border: 1px solid ${colors.border} !important; font-weight: ${CONFIG.fonts.weights.normal} !important; }`,
-            `${prefix} [data-element-id="chat-folder"] textarea:focus, ${prefix} [data-element-id="custom-chat-item"] textarea:focus, ${prefix} [data-element-id="selected-chat-item"] textarea:focus, ${prefix} [data-element-id="side-bar-background"] textarea:focus { background-color: ${colors.sidebar.searchBg} !important; color: ${colors.text} !important; border-color: #2563eb !important; box-shadow: 0 0 0 2px rgba(37,99,235,0.2) !important; }`,
-            `${prefix} [data-element-id="workspace-bar"] button span.hover\\:bg-white\\/20:hover, ${prefix} [data-element-id="workspace-bar"] button:hover span.text-white\\/70, ${prefix} [data-element-id="workspace-profile-button"]:hover { background-color: ${colors.hoverOverlay} !important; }`
+            `${prefix} [data-element-id="custom-chat-item"] span, ${prefix} [data-element-id="selected-chat-item"] span { color: ${colors.sidebar.text} !important; font-family: ${CONFIG.fonts.sidebar.family} !important; font-size: ${CONFIG.fonts.sidebar.size} !important; line-height: ${CONFIG.fonts.sidebar.lineHeight} !important; }`,
+            `${prefix} [data-element-id="workspace-bar"] button:hover { background-color: ${colors.hoverOverlay} !important; }`
         ];
 
-        const lightStyles = generateSidebarStyles(CONFIG.colors.light, 'html:not(.dark)');
-        const darkStyles = generateSidebarStyles(CONFIG.colors.dark, 'html.dark');
+        const lightStyles = generateSidebarStyles(light, 'html:not(.dark)');
+        const darkStyles = generateSidebarStyles(dark, 'html.dark');
         
         sidebarStyle.innerHTML = [...lightStyles, ...darkStyles].join('\n');
         document.head.appendChild(sidebarStyle);
     }
 
+    /**
+     * 4) Main Chat & Input Styles
+     */
     const mainStyle = document.createElement('style');
     const light = CONFIG.colors.light;
     const dark = CONFIG.colors.dark;
     
     mainStyle.textContent = `
-      /* --- SMUDGE FIX: Force transparency to clear the dark square --- */
+      /* --- SAFE SMUDGE FILTER --- */
+      /* Targets only the gradient backgrounds and makes them invisible to the eye */
       [class*="scroll-indicator-gradient"], 
       [class*="bg-gradient-to-l"][class*="from-black"],
       [class*="bg-gradient-to-l"][class*="from-white"] { 
-        background-image: none !important; 
-        background: transparent !important;
-        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
       }
 
       /* ===== LIGHT MODE ===== */
-      html:not(.dark) [data-element-id="chat-space-middle-part"] .prose.max-w-full *:not( pre, pre *, code, code *, .flex.items-start.justify-center.flex-col.gap-2 *, .text-xs.text-gray-500.truncate, .italic.truncate.hover\\:underline, h1, h2, h3, h4, h5, h6, strong, b ),
-      html:not(.dark) [data-element-id="chat-space-middle-part"] [data-element-id="user-message"] > div { font-family: ${CONFIG.fonts.primary} !important; font-size: 18px !important; line-height: 28px !important; color: ${light.text} !important; font-weight: ${CONFIG.fonts.weights.normal} !important; }
-      html:not(.dark) [data-element-id="chat-space-middle-part"] .prose.max-w-full, html:not(.dark) [data-element-id="chat-space-middle-part"] [data-element-id="user-message"] { font-family: ${CONFIG.fonts.primary} !important; font-size: 18px !important; line-height: 28px !important; color: ${light.text} !important; font-weight: ${CONFIG.fonts.weights.normal} !important; -webkit-font-smoothing: antialiased !important; -moz-osx-font-smoothing: grayscale !important; text-rendering: optimizeLegibility !important; letter-spacing: -0.005em !important; }
-      html:not(.dark) [data-element-id="chat-space-middle-part"] [data-element-id="user-message"] { margin-left: auto !important; margin-right: 0 !important; display: block !important; max-width: 90% !important; border-radius: ${CONFIG.borderRadius.large} !important; background-color: ${light.input.background} !important; color: ${light.text} !important; padding: 1rem !important; margin-bottom: ${CONFIG.spacing.small} !important; }
-      html:not(.dark) [data-element-id="chat-space-middle-part"] [data-element-id="user-message"], html:not(.dark) [data-element-id="chat-space-middle-part"] [data-element-id="user-message"] > div { background-color: ${light.input.background} !important; }
+      html:not(.dark) [data-element-id="chat-space-middle-part"] .prose.max-w-full, 
+      html:not(.dark) [data-element-id="chat-space-middle-part"] [data-element-id="user-message"] { font-family: ${CONFIG.fonts.primary} !important; font-size: 18px !important; line-height: 28px !important; color: ${light.text} !important; }
+      html:not(.dark) [data-element-id="chat-space-middle-part"] [data-element-id="user-message"] { margin-left: auto !important; max-width: 90% !important; border-radius: ${CONFIG.borderRadius.large} !important; background-color: ${light.input.background} !important; padding: 1rem !important; margin-bottom: ${CONFIG.spacing.small} !important; }
+      html:not(.dark) ${SELECTORS.CODE_BLOCK_CONTAINER} { background-color: ${light.background} !important; border: 1px solid ${light.border} !important; border-radius: ${CONFIG.borderRadius.small} !important; }
       
       /* ===== DARK MODE ===== */
-      html.dark [data-element-id="chat-space-middle-part"] .prose.max-w-full *:not( pre, pre *, code, code *, .flex.items-start.justify-center.flex-col.gap-2 *, .text-xs.text-gray-500.truncate, .italic.truncate.hover\\:underline, h1, h2, h3, h4, h5, h6, strong, b ),
-      html.dark [data-element-id="chat-space-middle-part"] [data-element-id="user-message"] > div { font-family: ${CONFIG.fonts.primary} !important; font-size: 18px !important; line-height: 28px !important; color: ${dark.text} !important; font-weight: ${CONFIG.fonts.weights.normal} !important; }
-      html.dark [data-element-id="chat-space-middle-part"] .prose.max-w-full, html.dark [data-element-id="chat-space-middle-part"] [data-element-id="user-message"] { font-family: ${CONFIG.fonts.primary} !important; font-size: 18px !important; line-height: 28px !important; color: ${dark.text} !important; font-weight: ${CONFIG.fonts.weights.normal} !important; -webkit-font-smoothing: antialiased !important; -moz-osx-font-smoothing: grayscale !important; text-rendering: optimizeLegibility !important; letter-spacing: -0.005em !important; }
-      html.dark [data-element-id="chat-space-middle-part"] [data-element-id="user-message"] { margin-left: auto !important; margin-right: 0 !important; display: block !important; max-width: 90% !important; border-radius: ${CONFIG.borderRadius.large} !important; background-color: ${dark.input.background} !important; color: ${dark.text} !important; padding: 1rem !important; margin-bottom: ${CONFIG.spacing.small} !important; }
-      html.dark [data-element-id="chat-space-middle-part"] [data-element-id="user-message"], html.dark [data-element-id="chat-space-middle-part"] [data-element-id="user-message"] > div { background-color: ${dark.input.background} !important; }
+      html.dark [data-element-id="chat-space-middle-part"] .prose.max-w-full, 
+      html.dark [data-element-id="chat-space-middle-part"] [data-element-id="user-message"] { font-family: ${CONFIG.fonts.primary} !important; font-size: 18px !important; line-height: 28px !important; color: ${dark.text} !important; }
+      html.dark [data-element-id="chat-space-middle-part"] [data-element-id="user-message"] { margin-left: auto !important; max-width: 90% !important; border-radius: ${CONFIG.borderRadius.large} !important; background-color: ${dark.input.background} !important; padding: 1rem !important; margin-bottom: ${CONFIG.spacing.small} !important; }
+      html.dark ${SELECTORS.CODE_BLOCK_CONTAINER} { background-color: ${dark.background} !important; border: 1px solid ${dark.border} !important; border-radius: ${CONFIG.borderRadius.small} !important; }
+
+      /* Input Bar Logic */
+      html:not(.dark) [data-element-id="chat-space-end-part"] [role="presentation"] { background-color: ${light.input.background} !important; border-radius: ${CONFIG.borderRadius.large} !important; margin-bottom: ${CONFIG.spacing.medium} !important; }
+      html.dark [data-element-id="chat-space-end-part"] [role="presentation"] { background-color: ${dark.input.background} !important; border-radius: ${CONFIG.borderRadius.large} !important; margin-bottom: ${CONFIG.spacing.medium} !important; }
+      #chat-input-textbox { border: none !important; outline: none !important; background: transparent !important; }
     `;
     document.head.appendChild(mainStyle);
 
-    const inputStyle = document.createElement('style');
-    inputStyle.textContent = `
-      html:not(.dark) [data-element-id="chat-space-end-part"] [role="presentation"] { background-color: ${light.input.background}; border-radius: ${CONFIG.borderRadius.large}; margin-bottom: ${CONFIG.spacing.medium}; }
-      html.dark [data-element-id="chat-space-end-part"] [role="presentation"] { background-color: ${dark.input.background}; border-radius: ${CONFIG.borderRadius.large}; margin-bottom: ${CONFIG.spacing.medium}; }
-      #chat-input-textbox { border: none !important; outline: none !important; background: transparent !important; }
-    `;
-    document.head.appendChild(inputStyle);
+    function multiStepParse(rawText) {
+        return Utils.safe(() => {
+            let processedHtml = rawText;
+            const codeBlockRegex = /^(```|""")(\w*)\s*([\s\S]*?)\s*\1$/gm;
+            const placeholders = [];
+            processedHtml = processedHtml.replace(codeBlockRegex, (match, delimiter, lang, code) => {
+                const placeholder = `__CODEBLOCK_${placeholders.length}__`;
+                placeholders.push(`<pre><div class="relative"><div class="sticky top-0 flex items-center bg-gray-200 dark:bg-gray-900 pl-[12px] pr-1 justify-between"><span class="text-xs font-light">${lang || 'code'}</span></div><div><pre><code style="white-space: pre;">${Utils.escapeHtml(code)}</code></pre></div></div></pre>`);
+                return placeholder;
+            });
+            processedHtml = Utils.escapeHtml(processedHtml);
+            placeholders.forEach((blockHtml, index) => { processedHtml = processedHtml.replace(`__CODEBLOCK_${index}__`, blockHtml); });
+            return processedHtml;
+        });
+    }
+
+    function styleUserMessageEl(msgEl) {
+        Utils.safe(() => {
+            if (msgEl.hasAttribute('data-processed')) return;
+            for (const child of msgEl.children) {
+                const rawText = child.textContent || '';
+                if (rawText.trim() === '' || !/[*`~_]/.test(rawText)) continue;
+                child.innerHTML = multiStepParse(rawText);
+            }
+            msgEl.setAttribute('data-processed', 'true');
+        });
+    }
+
+    const improveTextDisplay = Utils.debounce((rootNode = document) => {
+        const scope = rootNode === document ? document.body : rootNode;
+        scope.querySelectorAll(SELECTORS.USER_MESSAGE_BLOCK).forEach(msg => styleUserMessageEl(msg));
+    }, 350);
 
     function initTheme() {
         applySidebarStyles();
-        new MutationObserver(() => {}).observe(document.body, { childList: true, subtree: true });
+        improveTextDisplay();
+        new MutationObserver(() => improveTextDisplay()).observe(document.body, { childList: true, subtree: true });
     }
 
     initTheme();
