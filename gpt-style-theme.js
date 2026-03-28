@@ -1,13 +1,10 @@
 /**
  * A ChatGPT-Inspired Theme for TypingMind
- * Restoration Version: Full Features + 1rem Padding + Smudge Fix
+ * Final Polish: Full Features + 1rem Padding + Transparency Fix
  */
 (function () {
     'use strict';
 
-    /**
-     * 1) Configuration & Selectors
-     */
     const CONFIG = {
         colors: {
             light: {
@@ -56,18 +53,12 @@
         SIDEBAR: { WORKSPACE: '[data-element-id="workspace-bar"]', BACKGROUND: '[data-element-id="side-bar-background"]', BEGINNING: '[data-element-id="sidebar-beginning-part"]', MIDDLE: '[data-element-id="sidebar-middle-part"]', SEARCH: '[data-element-id="search-chats-bar"]', NEW_CHAT: '[data-element-id="new-chat-button-in-side-bar"]' }
     };
 
-    /**
-     * 2) Utility Functions
-     */
     const Utils = {
         debounce(fn, delay) { let timeout; return (...args) => { clearTimeout(timeout); timeout = setTimeout(() => fn(...args), delay); }; },
         safe(fn, context = 'unknown') { try { return fn(); } catch (e) { console.error(`Error in ${context}:`, e); return null; } },
         escapeHtml(str) { if (typeof str !== 'string') return ''; return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
     };
 
-    /**
-     * 3) Sidebar Styling & Behavior
-     */
     function applySidebarStyles() {
         if (document.getElementById('typingmindSidebarFixMerged')) return;
         const sidebarStyle = document.createElement('style'); sidebarStyle.id = 'typingmindSidebarFixMerged'; sidebarStyle.type = 'text/css';
@@ -105,36 +96,26 @@
             `${prefix} [data-element-id="workspace-bar"] button span.hover\\:bg-white\\/20:hover, ${prefix} [data-element-id="workspace-bar"] button:hover span.text-white\\/70, ${prefix} [data-element-id="workspace-profile-button"]:hover { background-color: ${colors.hoverOverlay} !important; }`
         ];
 
-        const lightStyles = generateSidebarStyles(light, 'html:not(.dark)');
-        const darkStyles = generateSidebarStyles(dark, 'html.dark');
+        const lightStyles = generateSidebarStyles(CONFIG.colors.light, 'html:not(.dark)');
+        const darkStyles = generateSidebarStyles(CONFIG.colors.dark, 'html.dark');
         
         sidebarStyle.innerHTML = [...lightStyles, ...darkStyles].join('\n');
-        
-        sidebarStyle.innerHTML += `\nhtml:not(.dark) ${SELECTORS.SIDEBAR.WORKSPACE} .rounded-full[class*="text-white"], html:not(.dark) ${SELECTORS.SIDEBAR.BACKGROUND} .rounded-full[class*="text-white"] { color: #fff !important; }`;
-        sidebarStyle.innerHTML += `\nhtml:not(.dark) ${SELECTORS.SIDEBAR.WORKSPACE} .bg-\\[\\#0d0d0d\\].text-white, html:not(.dark) ${SELECTORS.SIDEBAR.BACKGROUND} .bg-\\[\\#0d0d0d\\].text-white { color: #fff !important; }`;
-        sidebarStyle.innerHTML += `\nhtml.dark ${SELECTORS.SIDEBAR.WORKSPACE} .rounded-full[class*="text-white"], html.dark ${SELECTORS.SIDEBAR.BACKGROUND} .rounded-full[class*="text-white"] { color: #fff !important; }`;
-        sidebarStyle.innerHTML += `\nhtml.dark ${SELECTORS.SIDEBAR.WORKSPACE} .bg-\\[\\#0d0d0d\\].text-white, html.dark ${SELECTORS.SIDEBAR.BACKGROUND} .bg-\\[\\#0d0d0d\\].text-white { color: #fff !important; }`;
-        
         document.head.appendChild(sidebarStyle);
-        new MutationObserver(() => { if (!document.getElementById('typingmindSidebarFixMerged')) { document.head.appendChild(sidebarStyle); } }).observe(document.body, { childList: true, subtree: true });
     }
-    function fixSearchPlaceholder() {
-        const input = document.querySelector(SELECTORS.SIDEBAR.SEARCH); if (input && !input.placeholder) { input.setAttribute('placeholder', 'Search chats'); }
-    }
-    document.addEventListener('DOMContentLoaded', () => { applySidebarStyles(); fixSearchPlaceholder(); });
-    if (!document.getElementById('typingmindSidebarFixMerged')) { applySidebarStyles(); fixSearchPlaceholder(); }
 
-    /**
-     * 4) Main Chat & Input Styles
-     */
     const mainStyle = document.createElement('style');
     const light = CONFIG.colors.light;
     const dark = CONFIG.colors.dark;
     
     mainStyle.textContent = `
-      /* --- SMUDGE FIX: Blend the bottom gradient corner --- */
-      html:not(.dark) .scroll-indicator-gradient, html:not(.dark) [class*="bg-gradient-to-l"] { --tw-gradient-from: ${light.input.background} !important; background-image: linear-gradient(to left, var(--tw-gradient-from), transparent) !important; }
-      html.dark .scroll-indicator-gradient, html.dark [class*="bg-gradient-to-l"] { --tw-gradient-from: ${dark.input.background} !important; background-image: linear-gradient(to left, var(--tw-gradient-from), transparent) !important; }
+      /* --- SMUDGE FIX: Force transparency to clear the dark square --- */
+      [class*="scroll-indicator-gradient"], 
+      [class*="bg-gradient-to-l"][class*="from-black"],
+      [class*="bg-gradient-to-l"][class*="from-white"] { 
+        background-image: none !important; 
+        background: transparent !important;
+        opacity: 0 !important;
+      }
 
       /* ===== LIGHT MODE ===== */
       html:not(.dark) [data-element-id="chat-space-middle-part"] .prose.max-w-full *:not( pre, pre *, code, code *, .flex.items-start.justify-center.flex-col.gap-2 *, .text-xs.text-gray-500.truncate, .italic.truncate.hover\\:underline, h1, h2, h3, h4, h5, h6, strong, b ),
@@ -142,10 +123,6 @@
       html:not(.dark) [data-element-id="chat-space-middle-part"] .prose.max-w-full, html:not(.dark) [data-element-id="chat-space-middle-part"] [data-element-id="user-message"] { font-family: ${CONFIG.fonts.primary} !important; font-size: 18px !important; line-height: 28px !important; color: ${light.text} !important; font-weight: ${CONFIG.fonts.weights.normal} !important; -webkit-font-smoothing: antialiased !important; -moz-osx-font-smoothing: grayscale !important; text-rendering: optimizeLegibility !important; letter-spacing: -0.005em !important; }
       html:not(.dark) [data-element-id="chat-space-middle-part"] [data-element-id="user-message"] { margin-left: auto !important; margin-right: 0 !important; display: block !important; max-width: 90% !important; border-radius: ${CONFIG.borderRadius.large} !important; background-color: ${light.input.background} !important; color: ${light.text} !important; padding: 1rem !important; margin-bottom: ${CONFIG.spacing.small} !important; }
       html:not(.dark) [data-element-id="chat-space-middle-part"] [data-element-id="user-message"], html:not(.dark) [data-element-id="chat-space-middle-part"] [data-element-id="user-message"] > div { background-color: ${light.input.background} !important; }
-      html:not(.dark) ${SELECTORS.CODE_BLOCK_CONTAINER} { background-color: ${light.background} !important; border: 1px solid ${light.border} !important; border-radius: ${CONFIG.borderRadius.small} !important; margin: 0.5em 0 !important; max-height: none !important; }
-      html:not(.dark) ${SELECTORS.CODE_BLOCK_CONTAINER} > div.relative > div.sticky { position: sticky !important; top: 0 !important; z-index: 10 !important; background-color: ${light.codeBlock.headerBg} !important; border-radius: 0.5rem 0.5rem 0 0 !important; border-bottom: 1px solid ${light.border} !important; }
-      html:not(.dark) ${SELECTORS.CODE_BLOCK_CONTAINER} code { font-family: ${CONFIG.fonts.code} !important; font-weight: ${CONFIG.fonts.weights.normal} !important; font-size: 13px !important; line-height: 20px !important; }
-      html:not(.dark) ${SELECTORS.AI_RESPONSE_BLOCK} ${SELECTORS.RESULT_BLOCKS} { background-color: #000 !important; color: #fff !important; border: none !important; padding: 8px !important; border-radius: 4px !important; white-space: pre-wrap !important; word-wrap: break-word !important; overflow-x: hidden !important; font-family: ${CONFIG.fonts.code} !important; font-weight: ${CONFIG.fonts.weights.normal} !important; }
       
       /* ===== DARK MODE ===== */
       html.dark [data-element-id="chat-space-middle-part"] .prose.max-w-full *:not( pre, pre *, code, code *, .flex.items-start.justify-center.flex-col.gap-2 *, .text-xs.text-gray-500.truncate, .italic.truncate.hover\\:underline, h1, h2, h3, h4, h5, h6, strong, b ),
@@ -153,65 +130,20 @@
       html.dark [data-element-id="chat-space-middle-part"] .prose.max-w-full, html.dark [data-element-id="chat-space-middle-part"] [data-element-id="user-message"] { font-family: ${CONFIG.fonts.primary} !important; font-size: 18px !important; line-height: 28px !important; color: ${dark.text} !important; font-weight: ${CONFIG.fonts.weights.normal} !important; -webkit-font-smoothing: antialiased !important; -moz-osx-font-smoothing: grayscale !important; text-rendering: optimizeLegibility !important; letter-spacing: -0.005em !important; }
       html.dark [data-element-id="chat-space-middle-part"] [data-element-id="user-message"] { margin-left: auto !important; margin-right: 0 !important; display: block !important; max-width: 90% !important; border-radius: ${CONFIG.borderRadius.large} !important; background-color: ${dark.input.background} !important; color: ${dark.text} !important; padding: 1rem !important; margin-bottom: ${CONFIG.spacing.small} !important; }
       html.dark [data-element-id="chat-space-middle-part"] [data-element-id="user-message"], html.dark [data-element-id="chat-space-middle-part"] [data-element-id="user-message"] > div { background-color: ${dark.input.background} !important; }
-      html.dark ${SELECTORS.CODE_BLOCK_CONTAINER} { background-color: ${dark.background} !important; border: 1px solid ${dark.border} !important; border-radius: ${CONFIG.borderRadius.small} !important; margin: 0.5em 0 !important; max-height: none !important; }
-      html.dark ${SELECTORS.CODE_BLOCK_CONTAINER} > div.relative > div.sticky { position: sticky !important; top: 0 !important; z-index: 10 !important; background-color: ${dark.codeBlock.headerBg} !important; border-radius: 0.5rem 0.5rem 0 0 !important; border-bottom: 1px solid ${dark.border} !important; }
-      html.dark ${SELECTORS.CODE_BLOCK_CONTAINER} code { font-family: ${CONFIG.fonts.code} !important; font-weight: ${CONFIG.fonts.weights.normal} !important; font-size: 13px !important; line-height: 20px !important; }
-      
-      /* ===== SHARED ===== */
-      [data-element-id="chat-space-middle-part"] [data-element-id="response-block"]:has([data-element-id="user-message"]) [data-element-id="chat-avatar-container"] { display: none !important; }
-      ${SELECTORS.CODE_BLOCK_CONTAINER} > div.relative > div:last-child { max-height: 600px; overflow-y: auto !important; }
     `;
     document.head.appendChild(mainStyle);
 
     const inputStyle = document.createElement('style');
     inputStyle.textContent = `
       html:not(.dark) [data-element-id="chat-space-end-part"] [role="presentation"] { background-color: ${light.input.background}; border-radius: ${CONFIG.borderRadius.large}; margin-bottom: ${CONFIG.spacing.medium}; }
-      html:not(.dark) #chat-input-textbox { font-family: ${CONFIG.fonts.primary}; font-size: 16px !important; line-height: 24px !important; padding: 0.75rem 1rem !important; color: ${light.input.text} !important; border: 0 !important; outline: none !important; }
       html.dark [data-element-id="chat-space-end-part"] [role="presentation"] { background-color: ${dark.input.background}; border-radius: ${CONFIG.borderRadius.large}; margin-bottom: ${CONFIG.spacing.medium}; }
-      html.dark #chat-input-textbox { font-family: ${CONFIG.fonts.primary}; font-size: 18px !important; line-height: 26px !important; padding: 0.75rem 1rem !important; color: ${dark.input.text} !important; border: 0 !important; outline: none !important; }
+      #chat-input-textbox { border: none !important; outline: none !important; background: transparent !important; }
     `;
     document.head.appendChild(inputStyle);
 
-    function multiStepParse(rawText) {
-        return Utils.safe(() => {
-            let processedHtml = rawText;
-            const codeBlockRegex = /^(```|""")(\w*)\s*([\s\S]*?)\s*\1$/gm;
-            const placeholders = [];
-            processedHtml = processedHtml.replace(codeBlockRegex, (match, delimiter, lang, code) => {
-                const placeholder = `__CODEBLOCK_${placeholders.length}__`;
-                placeholders.push(`<pre><div class="relative"><div class="sticky top-0 flex items-center bg-gray-200 dark:bg-gray-900 pl-[12px] pr-1 justify-between"><span class="text-xs font-light">${lang || 'code'}</span></div><div><pre><code style="white-space: pre;">${Utils.escapeHtml(code)}</code></pre></div></div></pre>`);
-                return placeholder;
-            });
-            processedHtml = Utils.escapeHtml(processedHtml);
-            placeholders.forEach((blockHtml, index) => { processedHtml = processedHtml.replace(`__CODEBLOCK_${index}__`, blockHtml); });
-            return processedHtml;
-        });
-    }
-
-    function styleUserMessageEl(msgEl) {
-        Utils.safe(() => {
-            if (msgEl.hasAttribute('data-processed')) return;
-            for (const child of msgEl.children) {
-                const rawText = child.textContent || '';
-                if (rawText.trim() === '') continue;
-                if (/[*`~_]/.test(rawText) || rawText.includes('```')) {
-                    child.innerHTML = multiStepParse(rawText);
-                }
-            }
-            msgEl.setAttribute('data-processed', 'true');
-        });
-    }
-
-    const improveTextDisplay = Utils.debounce((rootNode = document) => {
-        const scope = rootNode === document ? document.body : rootNode;
-        scope.querySelectorAll(SELECTORS.USER_MESSAGE_BLOCK).forEach(msg => styleUserMessageEl(msg));
-    }, 350);
-
     function initTheme() {
         applySidebarStyles();
-        fixSearchPlaceholder();
-        improveTextDisplay();
-        new MutationObserver(() => improveTextDisplay()).observe(document.body, { childList: true, subtree: true });
+        new MutationObserver(() => {}).observe(document.body, { childList: true, subtree: true });
     }
 
     initTheme();
