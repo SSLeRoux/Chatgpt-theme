@@ -1,137 +1,136 @@
 /**
  * A ChatGPT-OLED-App Theme for TypingMind
- * THE FINAL MASTER: OLED Black, Left-Aligned AI Text, Full Sidebar, Monochrome UI
+ * BASE: User's Full Original Script
+ * UPDATES: Pure Black, #303030 Bubbles, Flush AI Text, Monochrome UI, 1rem Padding
  */
 (function () {
     'use strict';
 
+    /**
+     * 1) Configuration & Selectors
+     */
     const CONFIG = {
         colors: {
+            light: {
+                background: '#F9F9F9',
+                text: '#000',
+                border: '#ccc',
+                input: { background: '#f4f4f4', text: 'rgb(13, 13, 13)', placeholder: 'rgb(142, 142, 142)' },
+                sidebar: { text: 'rgb(13, 13, 13)', hover: '#E3E3E3', searchBg: '#fff' }
+            },
             dark: {
-                background: '#000000',
-                bubble: '#303030',
+                background: '#000000', // OLED Black
                 text: '#ececec',
                 border: '#222',
-                sidebarHover: '#2f2f2f',
-                uiGrey: '#a1a1a1',
-                placeholder: 'rgba(255,255,255,0.4)',
-                searchBg: '#1a1a1a'
+                input: { background: '#303030', text: '#ececec', placeholder: 'rgba(255,255,255,0.4)' }, // App Grey
+                uiGrey: '#a1a1a1', // For Monochrome buttons
+                sidebar: { text: '#ececec', heading: 'rgb(143, 143, 143)', hover: '#2f2f2f', searchBg: '#1a1a1a' }
             }
         },
-        fonts: { 
-            primary: 'ui-sans-serif, -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif',
-            sidebar: 'ui-sans-serif, -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif'
-        },
+        fonts: { primary: 'ui-sans-serif, -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif', sidebar: 'ui-sans-serif, -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif' },
         borderRadius: { large: '1.5rem' }
     };
 
-    const style = document.createElement('style');
+    const SELECTORS = {
+        USER_MESSAGE_BLOCK: 'div[data-element-id="user-message"]',
+        AI_RESPONSE_BLOCK: '[data-element-id="ai-response"]',
+        AI_AVATAR: '[data-element-id="chat-avatar-container"]',
+        SIDEBAR: { WORKSPACE: '[data-element-id="workspace-bar"]', BACKGROUND: '[data-element-id="side-bar-background"]', BEGINNING: '[data-element-id="sidebar-beginning-part"]', MIDDLE: '[data-element-id="sidebar-middle-part"]', SEARCH: '[data-element-id="search-chats-bar"]', NEW_CHAT: '[data-element-id="new-chat-button-in-side-bar"]' }
+    };
+
+    /**
+     * 2) Sidebar Styling (Restored & Darkened)
+     */
+    function applySidebarStyles() {
+        if (document.getElementById('typingmindSidebarFixMerged')) return;
+        const sidebarStyle = document.createElement('style'); sidebarStyle.id = 'typingmindSidebarFixMerged';
+        const dark = CONFIG.colors.dark;
+        
+        sidebarStyle.innerHTML = `
+            html.dark ${SELECTORS.SIDEBAR.WORKSPACE}, 
+            html.dark ${SELECTORS.SIDEBAR.BACKGROUND}, 
+            html.dark ${SELECTORS.SIDEBAR.BEGINNING}, 
+            html.dark ${SELECTORS.SIDEBAR.MIDDLE} { background-color: ${dark.background} !important; }
+            
+            html.dark ${SELECTORS.SIDEBAR.SEARCH} { background-color: ${dark.sidebar.searchBg} !important; border: 1px solid ${dark.border} !important; color: ${dark.text} !important; }
+            html.dark ${SELECTORS.SIDEBAR.NEW_CHAT} { background-color: ${dark.sidebar.hover} !important; color: ${dark.text} !important; }
+            html.dark [data-element-id="custom-chat-item"]:hover, 
+            html.dark [data-element-id="selected-chat-item"] { background-color: ${dark.sidebar.hover} !important; }
+            html.dark [data-element-id="custom-chat-item"] span, 
+            html.dark [data-element-id="selected-chat-item"] span { color: ${dark.sidebar.text} !important; font-family: ${CONFIG.fonts.sidebar} !important; }
+        `;
+        document.head.appendChild(sidebarStyle);
+    }
+
+    /**
+     * 3) Main Chat & Input Styles (The "OLED App" Look)
+     */
+    const mainStyle = document.createElement('style');
     const d = CONFIG.colors.dark;
     
-    style.textContent = `
-      /* --- 1) THE GREAT OLED BLACKOUT --- */
+    mainStyle.textContent = `
+      /* --- GLOBAL OLED BLACKOUT --- */
       html.dark body, 
       html.dark [data-element-id="chat-space-middle-part"],
-      html.dark [data-element-id="side-bar-background"],
-      html.dark [data-element-id="workspace-bar"],
       html.dark [data-element-id="chat-space-beginning-part"],
       html.dark [data-element-id="chat-space-end-part"],
       html.dark [data-element-id="nav-bar"],
-      html.dark header,
-      html.dark [class*="bg-gray-50"], 
-      html.dark [class*="dark:bg-gray-800"] { 
-        background-color: ${d.background} !important; 
-        background-image: none !important;
-      }
+      html.dark header { background-color: ${d.background} !important; background-image: none !important; }
 
-      /* --- 2) AI TEXT ALIGNMENT (LEFT-FLUSH) --- */
-      [data-element-id="chat-avatar-container"] { display: none !important; }
-      
-      /* Target the AI response container to align left and add padding */
-      [data-element-id="ai-response"] { 
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: flex-start !important; /* Force to the left */
-        padding-left: 1rem !important; 
-        padding-right: 2rem !important; /* Keep space on the right for readability */
-        margin-left: 0 !important;
-        width: 100% !important;
+      /* --- AI RESPONSE: LEFT-FLUSH --- */
+      ${SELECTORS.AI_AVATAR} { display: none !important; }
+      ${SELECTORS.AI_RESPONSE_BLOCK} { 
+        display: flex !important; flex-direction: column !important; align-items: flex-start !important; 
+        padding-left: 1rem !important; padding-right: 2rem !important; width: 100% !important; 
       }
-      
-      /* Ensure the inner prose text also respects the left alignment */
-      [data-element-id="ai-response"] > div { 
-        width: 100% !important;
-        text-align: left !important;
-      }
+      ${SELECTORS.AI_RESPONSE_BLOCK} > div { width: 100% !important; text-align: left !important; display: block !important; }
 
-      /* --- 3) FULL SIDEBAR RESTORATION --- */
-      html.dark [data-element-id="search-chats-bar"] { 
-        background-color: ${d.searchBg} !important; 
-        border: 1px solid ${d.border} !important; 
-      }
-      html.dark [data-element-id="new-chat-button-in-side-bar"] { 
-        background-color: ${d.sidebarHover} !important; 
-        color: ${d.text} !important; 
-      }
-      html.dark [data-element-id="custom-chat-item"]:hover, 
-      html.dark [data-element-id="selected-chat-item"] { 
-        background-color: ${d.sidebarHover} !important; 
-      }
-      html.dark [data-element-id="custom-chat-item"] span, 
-      html.dark [data-element-id="selected-chat-item"] span { 
-        color: ${d.text} !important; 
-        font-family: ${CONFIG.fonts.sidebar} !important; 
-      }
-
-      /* --- 4) USER MESSAGES & INPUT --- */
-      html.dark [data-element-id="user-message"] { 
-        background-color: ${d.bubble} !important; 
-        padding: 1rem !important;
+      /* --- USER MESSAGE BUBBLES --- */
+      html.dark ${SELECTORS.USER_MESSAGE_BLOCK} { 
+        background-color: ${d.input.background} !important; 
+        color: ${d.text} !important;
+        padding: 1rem !important; /* Fixed to 1rem */
         border-radius: ${CONFIG.borderRadius.large} !important;
         margin-left: auto !important;
         max-width: 90% !important;
       }
+
+      /* --- INPUT BAR --- */
       html.dark [data-element-id="chat-space-end-part"] [role="presentation"] { 
-        background-color: ${d.bubble} !important; 
+        background-color: ${d.input.background} !important; 
         border-radius: ${CONFIG.borderRadius.large} !important;
       }
-      #chat-input-textbox::placeholder { font-size: 13px !important; opacity: 0.5 !important; }
+      #chat-input-textbox::placeholder { font-size: 13px !important; color: ${d.input.placeholder} !important; }
 
-      /* --- 5) MONOCHROME BUTTONS & MODEL PICKER --- */
-      /* Reroll & Model Picker Backgrounds */
-      button[aria-label="Regenerate response"],
-      [data-element-id="model-picker-button"],
-      [data-element-id="plugin-picker-button"] {
-        background-color: ${d.bubble} !important;
-        color: ${d.uiGrey} !important;
-        border: 1px solid ${d.border} !important;
-      }
-      
-      /* Change any blue icons/text to grey */
-      html.dark svg[class*="text-blue-"], 
-      html.dark [class*="text-blue-600"] { 
+      /* --- MONOCHROME UI --- */
+      button[aria-label="Regenerate response"], 
+      [data-element-id="model-picker-button"], 
+      [data-element-id="plugin-picker-button"] { 
+        background-color: ${d.input.background} !important; 
         color: ${d.uiGrey} !important; 
+        border: 1px solid ${d.border} !important; 
       }
+      html.dark svg[class*="text-blue-"] { color: ${d.uiGrey} !important; }
 
-      /* Text Rendering */
-      .prose { 
-        font-family: ${CONFIG.fonts.primary} !important; 
-        font-size: 18px !important;
-        line-height: 28px !important;
-        color: ${d.text} !important;
-      }
+      /* PROSE TEXT */
+      .prose { font-family: ${CONFIG.fonts.primary} !important; font-size: 18px !important; line-height: 28px !important; }
     `;
-    document.head.appendChild(style);
+    document.head.appendChild(mainStyle);
 
-    // MutationObserver to ensure user message padding stays consistent
+    /**
+     * 4) Logic & Observers
+     */
+    function processUserMessage(msgEl) {
+        if (msgEl.hasAttribute('data-processed')) return;
+        msgEl.style.padding = "1rem";
+        msgEl.setAttribute('data-processed', 'true');
+    }
+
     const observer = new MutationObserver(() => {
-        document.querySelectorAll('[data-element-id="user-message"]').forEach(msg => {
-            if (!msg.hasAttribute('data-processed')) {
-                msg.style.padding = "1rem";
-                msg.setAttribute('data-processed', 'true');
-            }
-        });
+        document.querySelectorAll(SELECTORS.USER_MESSAGE_BLOCK).forEach(msg => processUserMessage(msg));
     });
+    
     observer.observe(document.body, { childList: true, subtree: true });
+    applySidebarStyles();
 
 })();
