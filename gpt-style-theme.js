@@ -194,7 +194,7 @@
       
       /* Shift AI Message Left & Expand Width to 110% */
       [data-element-id="ai-response"] {
-          margin-left: -45px !important;
+          margin-left: -35px !important;
           width: 110% !important;
           max-width: 110% !important;
       }
