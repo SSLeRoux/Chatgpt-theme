@@ -35,7 +35,7 @@
                 text: '#ececec',
                 border: '#444',
                 input: { background: '#303030', text: '#ececec', placeholder: 'rgba(255,255,255,0.5)' },
-                button: { primary: '#a1a1a1', hover: '#888888' }, /* Grey buttons */
+                button: { primary: '#808080', hover: '#888888' }, /* Grey buttons */
                 thought: { text: '#6cb6ff' },
                 inlineCode: { background: '#2f2f2f', border: '#444', text: '#ececec' },
                 sidebar: { text: '#ececec', heading: 'rgb(143, 143, 143)', hover: '#2f2f2f', searchBg: '#303030', searchPlaceholder: 'rgba(255,255,255,0.5)' },
@@ -194,7 +194,7 @@
       
       /* Shift AI Message Left & Expand Width to 110% */
       [data-element-id="ai-response"] {
-          margin-left: -45px !important;
+          margin-left: -35px !important;
           width: 110% !important;
           max-width: 110% !important;
       }
