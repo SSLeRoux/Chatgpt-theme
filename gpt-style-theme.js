@@ -293,8 +293,8 @@
 
       /* Reduce the space between that row of buttons and the input box */
       [data-element-id="chat-space-end-part"] > div:first-child {
-          margin-bottom: 4px !important;
-          padding-bottom: 0px !important;
+          margin-top: 2px !important;
+          padding-top: 2px !important;
       }`;
     document.head.appendChild(inputStyle);
 
