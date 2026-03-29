@@ -35,7 +35,7 @@
                 text: '#ececec',
                 border: '#444',
                 input: { background: '#303030', text: '#ececec', placeholder: 'rgba(255,255,255,0.5)' },
-                button: { primary: '#808080', hover: '#888888' }, /* Grey buttons */
+                button: { primary: '#a1a1a1', hover: '#888888' }, /* Grey buttons */
                 thought: { text: '#6cb6ff' },
                 inlineCode: { background: '#2f2f2f', border: '#444', text: '#ececec' },
                 sidebar: { text: '#ececec', heading: 'rgb(143, 143, 143)', hover: '#2f2f2f', searchBg: '#303030', searchPlaceholder: 'rgba(255,255,255,0.5)' },
@@ -194,7 +194,7 @@
       
       /* Shift AI Message Left & Expand Width to 110% */
       [data-element-id="ai-response"] {
-          margin-left: -35px !important;
+          margin-left: -45px !important;
           width: 110% !important;
           max-width: 110% !important;
       }
@@ -217,7 +217,7 @@
     inputStyle.textContent = `
       /* ===== LIGHT MODE INPUT ===== */
       html:not(.dark) [data-element-id="chat-space-end-part"] [role="presentation"] { background-color: ${light.input.background}; border-radius: ${CONFIG.borderRadius.large}; margin-bottom: ${CONFIG.spacing.medium}; }
-      html:not(.dark) #chat-input-textbox { font-family: ${CONFIG.fonts.primary}; font-size: 16px !important; line-height: 24px !important; min-height: 44px !important; padding: 0.75rem 1rem !important; border-radius: 1.5rem !important; color: ${light.input.text} !important; border: 0 solid ${light.border} !important; outline: none !important; margin: 8px 0 !important; overflow-wrap: break-word !important; tab-size: 4 !important; text-size-adjust: 100% !important; white-space: pre-wrap !important; font-variant-ligatures: none !important; -webkit-tap-highlight-color: transparent !important; font-weight: ${CONFIG.fonts.weights.normal} !important; }
+      html:not(.dark) #chat-input-textbox { font-family: ${CONFIG.fonts.primary}; font-size: 16px !important; line-height: 24px !important; min-height: 44px !important; padding: 0.75rem 1rem 0.5rem 1rem !important; border-radius: 1.5rem !important; color: ${light.input.text} !important; border: 0 solid ${light.border} !important; outline: none !important; margin: 8px 0 0 0 !important; overflow-wrap: break-word !important; tab-size: 4 !important; text-size-adjust: 100% !important; white-space: pre-wrap !important; font-variant-ligatures: none !important; -webkit-tap-highlight-color: transparent !important; font-weight: ${CONFIG.fonts.weights.normal} !important; }
       html:not(.dark) #chat-input-textbox::placeholder { color: ${light.input.placeholder} !important; opacity: 1 !important; font-weight: ${CONFIG.fonts.weights.normal} !important; }
       html:not(.dark) [data-element-id="chat-input-actions"] button:not([data-element-id="send-button"]):not([data-element-id="more-options-button"]):not([data-element-id="replace-only-button"]) { transition: all 0.2s ease !important; color: ${light.text} !important; }
       html:not(.dark) [data-element-id="chat-input-actions"] button:not([data-element-id="send-button"]):not([data-element-id="more-options-button"]):not([data-element-id="replace-only-button"]):hover { background-color: ${light.hoverOverlay} !important; border-radius: 0.5rem !important; }
@@ -259,7 +259,8 @@
           background-color: transparent !important; 
       }
 
-      html.dark #chat-input-textbox { font-family: ${CONFIG.fonts.primary}; font-size: 16px !important; line-height: 24px !important; min-height: 44px !important; padding: 0.75rem 1rem !important; border-radius: 1.5rem !important; color: ${dark.input.text} !important; border: 0 solid ${dark.border} !important; outline: none !important; margin: 8px 0 !important; overflow-wrap: break-word !important; tab-size: 4 !important; text-size-adjust: 100% !important; white-space: pre-wrap !important; font-variant-ligatures: none !important; -webkit-tap-highlight-color: transparent !important; font-weight: ${CONFIG.fonts.weights.normal} !important; }
+      /* Reduced bottom padding and margin to tighten the gap between text and send button */
+      html.dark #chat-input-textbox { font-family: ${CONFIG.fonts.primary}; font-size: 16px !important; line-height: 24px !important; min-height: 44px !important; padding: 0.75rem 1rem 0.5rem 1rem !important; border-radius: 1.5rem !important; color: ${dark.input.text} !important; border: 0 solid ${dark.border} !important; outline: none !important; margin: 8px 0 0 0 !important; overflow-wrap: break-word !important; tab-size: 4 !important; text-size-adjust: 100% !important; white-space: pre-wrap !important; font-variant-ligatures: none !important; -webkit-tap-highlight-color: transparent !important; font-weight: ${CONFIG.fonts.weights.normal} !important; }
       html.dark #chat-input-textbox::placeholder { color: ${dark.input.placeholder} !important; opacity: 1 !important; font-weight: ${CONFIG.fonts.weights.normal} !important; }
       html.dark [data-element-id="chat-input-actions"] button:not([data-element-id="send-button"]):not([data-element-id="more-options-button"]):not([data-element-id="replace-only-button"]) { transition: all 0.2s ease !important; color: ${dark.text} !important; }
       html.dark [data-element-id="chat-input-actions"] button:not([data-element-id="send-button"]):not([data-element-id="more-options-button"]):not([data-element-id="replace-only-button"]):hover { background-color: ${dark.hoverOverlay} !important; border-radius: 0.5rem !important; }
@@ -281,7 +282,8 @@
       
       /* ===== SHARED INPUT ===== */
       [data-element-id="chat-input-actions"] button:not([data-element-id="send-button"]):not([data-element-id="more-options-button"]):not([data-element-id="replace-only-button"]) svg { width: 20px !important; height: 20px !important; vertical-align: middle !important; }
-      [data-element-id="chat-input-actions"] { padding: 0.5rem 0.75rem !important; }
+      /* Reduced top padding on the actions row to help tighten the gap */
+      [data-element-id="chat-input-actions"] { padding: 0.25rem 0.75rem 0.5rem 0.75rem !important; }
     `;
     document.head.appendChild(inputStyle);
 
