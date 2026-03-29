@@ -49,20 +49,20 @@
       
       [data-element-id="response-block"] { 
         display: block !important; 
-        width: 100% !important; 
+        width: 110% !important; 
       }
 
       [data-element-id="ai-response"] { 
         display: block !important;
-        margin-left: -50px !important; /* Forced nudge to the left */
+        margin-left: -45px !important; /* Forced nudge to the left */
         padding-left: 1rem !important; 
         padding-right: 1.5rem !important; 
-        max-width: 100% !important; 
-        width: calc(100% + 50px) !important;
+        max-width: 110% !important; 
+        width: calc(110% + 50px) !important;
       }
       
       [data-element-id="ai-response"] > div { 
-        width: 100% !important;
+        width: 110% !important;
         text-align: left !important;
       }
 
