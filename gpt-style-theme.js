@@ -44,12 +44,12 @@
         box-shadow: none !important;
       }
 
-      /* --- 2) AI TEXT ALIGNMENT (-50PX BRUTE FORCE) --- */
+      /* --- 2) AI TEXT ALIGNMENT (-45PX BRUTE FORCE) --- */
       [data-element-id="chat-avatar-container"] { display: none !important; }
       
       [data-element-id="response-block"] { 
         display: block !important; 
-        width: 110% !important; 
+        width: 100% !important; 
       }
 
       [data-element-id="ai-response"] { 
