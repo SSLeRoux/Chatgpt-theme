@@ -35,7 +35,7 @@
                 text: '#ececec',
                 border: '#444',
                 input: { background: '#303030', text: '#ececec', placeholder: 'rgba(255,255,255,0.5)' },
-                button: { primary: '#a1a1a1', hover: '#888888', text: '#000000' }, /* Grey buttons, black text */
+                button: { primary: '#a1a1a1', hover: '#888888' }, /* Grey buttons */
                 thought: { text: '#6cb6ff' },
                 inlineCode: { background: '#2f2f2f', border: '#444', text: '#ececec' },
                 sidebar: { text: '#ececec', heading: 'rgb(143, 143, 143)', hover: '#2f2f2f', searchBg: '#303030', searchPlaceholder: 'rgba(255,255,255,0.5)' },
@@ -194,7 +194,7 @@
       
       /* Shift AI Message Left & Expand Width to 110% */
       [data-element-id="ai-response"] {
-          margin-left: -50px !important;
+          margin-left: -45px !important;
           width: 110% !important;
           max-width: 110% !important;
       }
@@ -228,11 +228,10 @@
       
       /* ===== DARK MODE INPUT & FOOTER ===== */
       
-      /* 1. Force the entire bottom area (footer/wrapper) to be OLED black so it blends with the screen */
+      /* 1. Make the wrappers behind the input transparent so the natural dark grey shows and corners disappear */
       html.dark [data-element-id="chat-space-end-part"],
-      html.dark [data-element-id="chat-space-end-part"] > div,
-      html.dark [data-element-id="chat-space-end-part"] *[class*="dark:bg-"] {
-          background-color: ${dark.background} !important; /* #000000 */
+      html.dark [data-element-id="chat-space-end-part"] > div {
+          background-color: transparent !important; 
           background-image: none !important;
       }
       
@@ -265,26 +264,19 @@
       html.dark [data-element-id="chat-input-actions"] button:not([data-element-id="send-button"]):not([data-element-id="more-options-button"]):not([data-element-id="replace-only-button"]) { transition: all 0.2s ease !important; color: ${dark.text} !important; }
       html.dark [data-element-id="chat-input-actions"] button:not([data-element-id="send-button"]):not([data-element-id="more-options-button"]):not([data-element-id="replace-only-button"]):hover { background-color: ${dark.hoverOverlay} !important; border-radius: 0.5rem !important; }
       
-      /* Dark mode: Grey buttons with Black text inside them */
+      /* Dark mode: Grey buttons. Removed the fill override so icons look normal again! */
       html.dark [data-element-id="send-button"], 
       html.dark [data-element-id="more-options-button"],
       html.dark [data-element-id="regenerate-button"] { 
           background-color: ${dark.button.primary} !important; 
           border-color: ${dark.button.primary} !important; 
-          color: ${dark.button.text} !important; 
+          color: #ffffff !important; 
       }
       html.dark [data-element-id="send-button"]:hover, 
       html.dark [data-element-id="more-options-button"]:hover,
       html.dark [data-element-id="regenerate-button"]:hover { 
           background-color: ${dark.button.hover} !important; 
           border-color: ${dark.button.hover} !important; 
-      }
-      /* Ensure icons/svgs inside these buttons are also black */
-      html.dark [data-element-id="send-button"] *, 
-      html.dark [data-element-id="more-options-button"] *,
-      html.dark [data-element-id="regenerate-button"] * {
-          color: ${dark.button.text} !important;
-          fill: ${dark.button.text} !important;
       }
       
       /* ===== SHARED INPUT ===== */
