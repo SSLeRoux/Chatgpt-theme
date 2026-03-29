@@ -284,7 +284,18 @@
       [data-element-id="chat-input-actions"] button:not([data-element-id="send-button"]):not([data-element-id="more-options-button"]):not([data-element-id="replace-only-button"]) svg { width: 20px !important; height: 20px !important; vertical-align: middle !important; }
       /* Reduced top padding on the actions row to help tighten the gap */
       [data-element-id="chat-input-actions"] { padding: 0.25rem 0.75rem 0.5rem 0.75rem !important; }
-    `;
+    /* Reduce vertical height of top row buttons (Model, Plugins, Regenerate) */
+      [data-element-id="chat-space-end-part"] > div:first-child button {
+          padding-top: 4px !important;
+          padding-bottom: 4px !important;
+          min-height: unset !important;
+      }
+
+      /* Reduce the space between that row of buttons and the input box */
+      [data-element-id="chat-space-end-part"] > div:first-child {
+          margin-bottom: 4px !important;
+          padding-bottom: 0px !important;
+      }`;
     document.head.appendChild(inputStyle);
 
     /**
