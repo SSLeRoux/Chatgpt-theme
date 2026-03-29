@@ -1,7 +1,7 @@
 /**
  * A ChatGPT-OLED-App Theme for TypingMind
- * BASE: User's Full Original Script
- * UPDATES: Pure Black, #303030 Bubbles, Flush AI Text, Monochrome UI, 1rem Padding
+ * THE FINAL MASTER CONSOLIDATED VERSION
+ * Pure Black (#000), #303030 Bubbles, Flush AI Text, Monochrome UI, 1rem Padding
  */
 (function () {
     'use strict';
@@ -11,23 +11,21 @@
      */
     const CONFIG = {
         colors: {
-            light: {
-                background: '#F9F9F9',
-                text: '#000',
-                border: '#ccc',
-                input: { background: '#f4f4f4', text: 'rgb(13, 13, 13)', placeholder: 'rgb(142, 142, 142)' },
-                sidebar: { text: 'rgb(13, 13, 13)', hover: '#E3E3E3', searchBg: '#fff' }
-            },
             dark: {
-                background: '#000000', // OLED Black
+                background: '#000000',
+                bubble: '#303030',
                 text: '#ececec',
-                border: '#000000',
-                input: { background: '#303030', text: '#ececec', placeholder: 'rgba(255,255,255,0.4)' }, // App Grey
-                uiGrey: '#1a1a1a', // For Monochrome buttons
-                sidebar: { text: '#ececec', heading: 'rgb(143, 143, 143)', hover: '#2f2f2f', searchBg: '#1a1a1a' }
+                border: '#222',
+                sidebarHover: '#2f2f2f',
+                uiGrey: '#a1a1a1',
+                placeholder: 'rgba(255,255,255,0.4)',
+                searchBg: '#1a1a1a'
             }
         },
-        fonts: { primary: 'ui-sans-serif, -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif', sidebar: 'ui-sans-serif, -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif' },
+        fonts: { 
+            primary: 'ui-sans-serif, -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"',
+            sidebar: 'ui-sans-serif, -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif'
+        },
         borderRadius: { large: '1.5rem' }
     };
 
@@ -35,52 +33,43 @@
         USER_MESSAGE_BLOCK: 'div[data-element-id="user-message"]',
         AI_RESPONSE_BLOCK: '[data-element-id="ai-response"]',
         AI_AVATAR: '[data-element-id="chat-avatar-container"]',
-        SIDEBAR: { WORKSPACE: '[data-element-id="workspace-bar"]', BACKGROUND: '[data-element-id="side-bar-background"]', BEGINNING: '[data-element-id="sidebar-beginning-part"]', MIDDLE: '[data-element-id="sidebar-middle-part"]', SEARCH: '[data-element-id="search-chats-bar"]', NEW_CHAT: '[data-element-id="new-chat-button-in-side-bar"]' }
+        SIDEBAR: { 
+            WORKSPACE: '[data-element-id="workspace-bar"]', 
+            BACKGROUND: '[data-element-id="side-bar-background"]',
+            SEARCH: '[data-element-id="search-chats-bar"]',
+            NEW_CHAT: '[data-element-id="new-chat-button-in-side-bar"]'
+        }
     };
 
     /**
-     * 2) Sidebar Styling (Restored & Darkened)
+     * 2) The CSS Engine
      */
-    function applySidebarStyles() {
-        if (document.getElementById('typingmindSidebarFixMerged')) return;
-        const sidebarStyle = document.createElement('style'); sidebarStyle.id = 'typingmindSidebarFixMerged';
-        const dark = CONFIG.colors.dark;
-        
-        sidebarStyle.innerHTML = `
-            html.dark ${SELECTORS.SIDEBAR.WORKSPACE}, 
-            html.dark ${SELECTORS.SIDEBAR.BACKGROUND}, 
-            html.dark ${SELECTORS.SIDEBAR.BEGINNING}, 
-            html.dark ${SELECTORS.SIDEBAR.MIDDLE} { background-color: ${dark.background} !important; }
-            
-            html.dark ${SELECTORS.SIDEBAR.SEARCH} { background-color: ${dark.sidebar.searchBg} !important; border: 1px solid ${dark.border} !important; color: ${dark.text} !important; }
-            html.dark ${SELECTORS.SIDEBAR.NEW_CHAT} { background-color: ${dark.sidebar.hover} !important; color: ${dark.text} !important; }
-            html.dark [data-element-id="custom-chat-item"]:hover, 
-            html.dark [data-element-id="selected-chat-item"] { background-color: ${dark.sidebar.hover} !important; }
-            html.dark [data-element-id="custom-chat-item"] span, 
-            html.dark [data-element-id="selected-chat-item"] span { color: ${dark.sidebar.text} !important; font-family: ${CONFIG.fonts.sidebar} !important; }
-        `;
-        document.head.appendChild(sidebarStyle);
-    }
-
-    /**
-     * 3) Main Chat & Input Styles (The "OLED App" Look)
-     */
-    const mainStyle = document.createElement('style');
+    const style = document.createElement('style');
     const d = CONFIG.colors.dark;
     
-    mainStyle.textContent = `
-      /* --- GLOBAL OLED BLACKOUT --- */
+    style.textContent = `
+      /* --- 1) TOTAL OLED BLACKOUT (TARGETING THE GREY BAR) --- */
       html.dark body, 
       html.dark [data-element-id="chat-space-middle-part"],
+      html.dark ${SELECTORS.SIDEBAR.BACKGROUND},
+      html.dark ${SELECTORS.SIDEBAR.WORKSPACE},
       html.dark [data-element-id="chat-space-beginning-part"],
       html.dark [data-element-id="chat-space-end-part"],
       html.dark [data-element-id="nav-bar"],
-      html.dark header { background-color: ${d.background} !important; background-image: none !important; }
+      html.dark header,
+      html.dark .sticky.bottom-0, /* The persistent grey bar fix */
+      html.dark [class*="bg-gray-50"], 
+      html.dark [class*="dark:bg-gray-800"],
+      html.dark [class*="bg-base-100"] { 
+        background-color: ${d.background} !important; 
+        background-image: none !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
 
-      /* --- AI RESPONSE: LEFT-FLUSH --- */      /* --- AI RESPONSE: FULL WIDTH & LEFT-FLUSH --- */
+      /* --- 2) FLUSH AI TEXT (LEFT-ALIGNED) --- */
       ${SELECTORS.AI_AVATAR} { display: none !important; }
       
-      /* Target the message row to remove grid gaps */
       [data-element-id="response-block"] { 
         display: block !important; 
         width: 100% !important; 
@@ -89,54 +78,83 @@
       ${SELECTORS.AI_RESPONSE_BLOCK} { 
         display: block !important;
         padding-left: 1rem !important; 
-        padding-right: 1rem !important; 
+        padding-right: 1.5rem !important; 
         margin-left: 0 !important;
-        margin-right: 0 !important;
-        max-width: 100% !important; /* This kills the blank space on the right */
-        width: 100% !important;
-      }
-      
-      /* Ensure the prose actually fills the container */
-      ${SELECTORS.AI_RESPONSE_BLOCK} > div { 
         max-width: 100% !important; 
         width: 100% !important;
       }
+      
+      ${SELECTORS.AI_RESPONSE_BLOCK} > div { 
+        width: 100% !important; 
+        max-width: 100% !important;
+        text-align: left !important;
+      }
 
-      /* --- USER MESSAGE BUBBLES --- */
+      /* --- 3) USER MESSAGES (1REM PADDING) --- */
       html.dark ${SELECTORS.USER_MESSAGE_BLOCK} { 
-        background-color: ${d.input.background} !important; 
+        background-color: ${d.bubble} !important; 
         color: ${d.text} !important;
-        padding: 1rem !important; /* Fixed to 1rem */
+        padding: 1rem !important;
         border-radius: ${CONFIG.borderRadius.large} !important;
         margin-left: auto !important;
         max-width: 90% !important;
+        font-family: ${CONFIG.fonts.primary} !important;
+        font-size: 18px !important;
+        line-height: 28px !important;
       }
 
-      /* --- INPUT BAR --- */
+      /* --- 4) INPUT AREA & MONOCHROME BUTTONS --- */
       html.dark [data-element-id="chat-space-end-part"] [role="presentation"] { 
-        background-color: ${d.input.background} !important; 
+        background-color: ${d.bubble} !important; 
         border-radius: ${CONFIG.borderRadius.large} !important;
       }
-      #chat-input-textbox::placeholder { font-size: 14px !important; color: ${d.input.placeholder} !important; }
+      
+      #chat-input-textbox { color: ${d.text} !important; background: transparent !important; }
+      #chat-input-textbox::placeholder { font-size: 14px !important; color: ${d.placeholder} !important; }
 
-      /* --- MONOCHROME UI --- */
-      button[aria-label="Regenerate response"], 
-      [data-element-id="model-picker-button"], 
-      [data-element-id="plugin-picker-button"] { 
-        background-color: ${d.input.background} !important; 
-        color: ${d.uiGrey} !important; 
-        border: 1px solid ${d.border} !important; 
+      /* Blue button to Grey UI */
+      .bg-blue-600, 
+      button[aria-label="Regenerate response"],
+      [data-element-id="regenerate-button"],
+      [class*="text-blue-"] { 
+        background-color: ${d.uiGrey} !important; 
+        color: #000 !important; 
+        border: none !important;
       }
+      
+      /* Active icons in input bar */
       html.dark svg[class*="text-blue-"] { color: ${d.uiGrey} !important; }
 
-      /* PROSE TEXT */
-      .prose { font-family: ${CONFIG.fonts.primary} !important; font-size: 18px !important; line-height: 28px !important; }
+      /* --- 5) FULL SIDEBAR RESTORATION --- */
+      html.dark ${SELECTORS.SIDEBAR.SEARCH} { background-color: ${d.searchBg} !important; border: 1px solid ${d.border} !important; color: ${d.text} !important; }
+      html.dark ${SELECTORS.SIDEBAR.NEW_CHAT} { background-color: ${d.sidebarHover} !important; color: ${d.text} !important; }
+      html.dark [data-element-id="custom-chat-item"]:hover, 
+      html.dark [data-element-id="selected-chat-item"] { background-color: ${d.sidebarHover} !important; }
+      html.dark [data-element-id="custom-chat-item"] span, 
+      html.dark [data-element-id="selected-chat-item"] span { 
+        color: ${d.text} !important; 
+        font-family: ${CONFIG.fonts.sidebar} !important; 
+      }
+
+      /* --- 6) TEXT & CODE RENDERING --- */
+      .prose { 
+        max-width: 100% !important; 
+        font-family: ${CONFIG.fonts.primary} !important; 
+        font-size: 18px !important;
+        line-height: 28px !important;
+        color: ${d.text} !important;
+      }
+      pre code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace !important; font-size: 14px !important; }
     `;
-    document.head.appendChild(mainStyle);
+    document.head.appendChild(style);
 
     /**
-     * 4) Logic & Observers
+     * 3) Logic & Performance Observers
      */
+    const Utils = {
+        safe(fn) { try { return fn(); } catch (e) { return null; } }
+    };
+
     function processUserMessage(msgEl) {
         if (msgEl.hasAttribute('data-processed')) return;
         msgEl.style.padding = "1rem";
@@ -148,6 +166,5 @@
     });
     
     observer.observe(document.body, { childList: true, subtree: true });
-    applySidebarStyles();
 
 })();
